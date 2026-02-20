@@ -206,23 +206,34 @@ Then use a SECOND `AskUserQuestion` call with 3 more questions:
   - "Small team (2–5 people)"
   - "Larger team (6+ people)"
 
-**Q5 — Issue Tracker**
+**Q5 — Git platform**
+- Header: "Git platform"
+- Question: "Where does your team host Git repositories?"
+- Options:
+  - "GitHub"
+  - "GitLab"
+  - "Bitbucket"
+  - "Azure DevOps"
+  (Other: self-hosted GitLab, Gitea, etc.)
+
+**Q6 — Issue Tracker**
 - Header: "Issue tracker"
 - Question: "Which issue tracker does your team use?"
 - Options:
   - "Jira"
   - "GitHub Issues"
+  - "GitLab Issues"
   - "Linear"
-  - "None"
+  (Other: "Azure Boards", "Bitbucket Issues", "None", etc.)
 
-**Q6 — Browser testing**
+**Q7 — Browser testing**
 - Header: "Browser testing"
 - Question: "Do you want visual browser verification after implementation? (Requires Chrome extension)"
 - Options:
   - "Yes — auto-screenshot and verify UI"
   - "No — manual browser testing"
 
-Save to `answers`: `team_size`, `issue_tracker`, `browser_testing`.
+Save to `answers`: `team_size`, `git_platform`, `issue_tracker`, `browser_testing`.
 
 Then use a THIRD `AskUserQuestion` call for exact commands:
 
@@ -267,6 +278,7 @@ Show summary:
          Project:  {project_type}
          Frontend: {frontend_stack} in {frontend_dir}
          Backend:  {backend_stack} in {backend_dir}
+         Git:      {git_platform}
          Tracker:  {issue_tracker}
 ```
 
@@ -304,6 +316,18 @@ For each file in `templates/commands/flow/` (this repo), read it, fill in `{YOUR
 Key substitutions in `verify.md`:
 - All `{YOUR_*_COMMAND}` → actual commands from answers
 - `{YOUR_FRONTEND_DIR}` → `answers.frontend_dir`
+
+Key substitutions in `pr.md` — replace the `gh pr create` call with the correct CLI for the chosen platform:
+- **GitHub** → `gh pr create --title "{title}" --body "{body}" --base {base}`
+  _(requires: `gh` CLI, `gh auth login`)_
+- **GitLab** → `glab mr create --title "{title}" --description "{body}" --target-branch {base}`
+  _(requires: `glab` CLI, `glab auth login`)_
+- **Bitbucket** → `echo "Open PR at: $(git remote get-url origin)/pull-requests/new?source=$(git branch --show-current)"`
+  _(no dedicated CLI; print URL for manual creation)_
+- **Azure DevOps** → `az repos pr create --title "{title}" --description "{body}" --target-branch {base}`
+  _(requires: `az` CLI with `azure-devops` extension, `az login`)_
+
+Also update the error handling hint in `pr.md` — replace `gh auth login` with the platform-appropriate auth command.
 
 **Create utility commands:**
 - Read `templates/commands/utils/refactor.md` (this repo), fill in typecheck + lint commands, write to `{TARGET}/.claude/commands/utils/refactor.md`

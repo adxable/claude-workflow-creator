@@ -45,9 +45,22 @@ brew install python@3.11
 
 # uv (for Python hooks)
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-# gh (for PR creation)
+**PR creation CLI** — install the one that matches your Git platform:
+
+```bash
+# GitHub
 brew install gh && gh auth login
+
+# GitLab
+brew install glab && glab auth login
+
+# Azure DevOps
+brew install azure-cli && az login
+# then: az extension add --name azure-devops
+
+# Bitbucket — no CLI required (wizard prints the PR URL)
 ```
 
 ---
