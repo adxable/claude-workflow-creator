@@ -40,6 +40,9 @@ The wizard will ask where to install the workflow, then walk you through everyth
 # Claude Code CLI
 npm install -g @anthropic-ai/claude-code
 
+# Python 3.11+
+brew install python@3.11
+
 # uv (for Python hooks)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
