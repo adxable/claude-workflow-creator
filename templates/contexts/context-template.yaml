@@ -1,0 +1,55 @@
+# Context Configuration Template
+# Copy this file and rename to: frontend.yaml, backend.yaml, mobile.yaml, etc.
+# The detector.py will pick it up automatically.
+
+name: {CONTEXT_NAME}
+description: {Short description, e.g. "React/TypeScript frontend"}
+
+# Indicators that suggest this context is active
+indicators:
+
+  # File path patterns (strongest signal: +10 points each)
+  # These are substring matches, so "src/components" matches any path containing it
+  paths:
+    - "{YOUR_ROOT_PATH}"          # e.g., "src/components"
+    - "{YOUR_FEATURE_PATH}"       # e.g., "src/features"
+    - "{YOUR_API_PATH}"           # e.g., "src/api"
+
+  # File extension patterns (+5 points each)
+  # Include the dot: ".tsx", ".cs", ".py"
+  extensions:
+    - "{YOUR_EXTENSION}"          # e.g., ".tsx"
+    - "{YOUR_EXTENSION_2}"        # e.g., ".ts"
+
+  # Keyword patterns (+3 points each)
+  # Matched case-insensitively anywhere in the prompt
+  keywords:
+    - "{KEYWORD_1}"               # e.g., "component"
+    - "{KEYWORD_2}"               # e.g., "React"
+    - "{KEYWORD_3}"               # e.g., "hook"
+    - "{KEYWORD_4}"               # e.g., "form"
+    - "{KEYWORD_5}"               # e.g., "table"
+
+# Root directory for this context
+project_root: "{YOUR_PROJECT_ROOT}"  # e.g., "frontend/" or "src/MyApp.Frontend"
+
+# Tools and commands for this context
+tools:
+  verify:
+    - "{YOUR_TYPECHECK_COMMAND}"  # e.g., "pnpm tsc --noEmit"
+    - "{YOUR_LINT_COMMAND}"       # e.g., "pnpm eslint src/"
+    - "{YOUR_BUILD_COMMAND}"      # e.g., "pnpm build"
+  test: "{YOUR_TEST_COMMAND}"     # e.g., "pnpm test"
+  start: "{YOUR_DEV_COMMAND}"     # e.g., "pnpm dev"
+  lint_fix: "{YOUR_LINT_FIX}"     # e.g., "pnpm eslint src/ --fix"
+
+# Skills to load in this context (match your .claude/skills/ structure)
+skills:
+  - "{SKILL_1}"                   # e.g., "frontend/react-patterns"
+  - "{SKILL_2}"                   # e.g., "workflow/code-quality-rules"
+
+# Agents optimized for this context (match your .claude/agents/ names)
+agents:
+  planner: "{YOUR_PLANNER}"       # e.g., "planner-fe"
+  implementer: "{YOUR_IMPL}"      # e.g., "implementer-fe"
+  reviewer: "{YOUR_REVIEWER}"     # e.g., "code-reviewer-fe"

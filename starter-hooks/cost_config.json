@@ -1,0 +1,52 @@
+{
+  "warn_thinking_enabled": true,
+  "session_token_warn_threshold": 500000,
+  "session_token_hard_warn_threshold": 1000000,
+  "session_prompt_warn_threshold": 30,
+  "daily_session_warn_threshold": 20,
+  "suggest_sonnet_for_simple": true,
+  "vague_prompt_min_words": 5,
+  "expensive_keywords": [
+    "refactor everything",
+    "rewrite all",
+    "fix all",
+    "update everything",
+    "check all files",
+    "review entire",
+    "scan the whole",
+    "go through all"
+  ],
+  "simple_task_keywords": [
+    "typo",
+    "rename",
+    "change string",
+    "update text",
+    "fix import",
+    "add comment",
+    "remove console.log"
+  ],
+  "expensive_commands": [
+    "/pipe:ship",
+    "/pm:ship-feature"
+  ],
+  "moderate_commands": [
+    "/flow:plan",
+    "/flow:implement",
+    "/flow:review",
+    "/flow:verify",
+    "/fe:refactor",
+    "/pm:gen-stories-from-url",
+    "/pm:gen-stories-from-img",
+    "/pm:gen-tasks-for-stories"
+  ],
+  "cheap_commands": [
+    "/flow:commit",
+    "/flow:pr",
+    "/jira:status",
+    "/jira:pr-desc",
+    "/jira:start",
+    "/pm:push",
+    "/pm:prepare",
+    "/utils:costs"
+  ]
+}

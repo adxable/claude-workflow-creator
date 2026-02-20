@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "description": "Keyword-based skill activation rules. When a user prompt matches keywords or intent patterns, the skill-activation-prompt hook suggests the relevant skill. Add entries here as you build out your .claude/skills/ directory.",
+  "skills": {
+    "react-patterns": {
+      "promptTriggers": {
+        "keywords": ["component", "hook", "react", "tsx", "useState", "useEffect", "context", "props"],
+        "intentPatterns": ["create.*component", "add.*hook", "build.*ui", "implement.*page"]
+      },
+      "priority": "high",
+      "enforcement": "suggest"
+    },
+    "react-tables": {
+      "promptTriggers": {
+        "keywords": ["table", "grid", "columns", "list page", "datagrid", "ag-grid"],
+        "intentPatterns": ["create.*table", "add.*grid", "implement.*list", "build.*datagrid"]
+      },
+      "priority": "high",
+      "enforcement": "suggest"
+    },
+    "react-forms": {
+      "promptTriggers": {
+        "keywords": ["form", "validation", "input", "field", "submit", "zod", "react-hook-form"],
+        "intentPatterns": ["create.*form", "add.*validation", "implement.*input"]
+      },
+      "priority": "high",
+      "enforcement": "suggest"
+    },
+    "react-data-fetching": {
+      "promptTriggers": {
+        "keywords": ["api", "fetch", "query", "mutation", "cache", "tanstack", "react-query"],
+        "intentPatterns": ["fetch.*data", "load.*api", "implement.*query", "add.*mutation"]
+      },
+      "priority": "high",
+      "enforcement": "suggest"
+    },
+    "browser-testing": {
+      "promptTriggers": {
+        "keywords": ["browser", "visual", "screenshot", "chrome", "test ui", "verify ui"],
+        "intentPatterns": ["test.*browser", "verify.*visual", "check.*ui"]
+      },
+      "priority": "medium",
+      "enforcement": "suggest"
+    },
+    "code-quality-rules": {
+      "promptTriggers": {
+        "keywords": ["refactor", "cleanup", "code review", "quality", "lint", "clean up"],
+        "intentPatterns": ["refactor.*code", "clean.*up", "improve.*quality"]
+      },
+      "priority": "medium",
+      "enforcement": "suggest"
+    }
+  }
+}
