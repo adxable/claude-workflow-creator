@@ -293,8 +293,8 @@ Read `guide/01-core-flow.md` (in this repo) for context.
 ```bash
 mkdir -p {TARGET}/.claude/commands/flow {TARGET}/.claude/commands/utils {TARGET}/.claude/commands/jira {TARGET}/.claude/commands/setup
 mkdir -p {TARGET}/.claude/agents {TARGET}/.claude/contexts
-mkdir -p {TARGET}/.claude/memory/knowledge/fragments {TARGET}/.claude/memory/local/fragments
-mkdir -p {TARGET}/.claude/hooks/utils/llm {TARGET}/.claude/plans {TARGET}/.claude/skills {TARGET}/.claude/reviews {TARGET}/.claude/context {TARGET}/.claude/logs
+mkdir -p {TARGET}/.claude/memory
+mkdir -p {TARGET}/.claude/hooks/utils {TARGET}/.claude/plans {TARGET}/.claude/skills {TARGET}/.claude/reviews {TARGET}/.claude/context {TARGET}/.claude/logs
 ```
 
 **Create `{TARGET}/.claude/CLAUDE.md`:**
@@ -557,17 +557,7 @@ Add project header to each file — insert after the `#` heading:
 > Project: {project_name} | Setup: {current date}
 ```
 
-**Create empty knowledge indexes:**
-Write `{"version": "1.0", "fragments": {}}` to:
-- `{TARGET}/.claude/memory/knowledge/index.json`
-- `{TARGET}/.claude/memory/local/index.json`
-
-**Copy knowledge store utilities:**
-```
-starter-hooks/utils/knowledge_store.py     → {TARGET}/.claude/hooks/utils/knowledge_store.py
-starter-hooks/utils/knowledge_retriever.py → {TARGET}/.claude/hooks/utils/knowledge_retriever.py
-starter-hooks/utils/constants.py           → {TARGET}/.claude/hooks/utils/constants.py
-```
+These three markdown files are the core memory system. The `context_loader.py` hook (installed in Phase 6) injects their contents into every significant prompt, giving Claude persistent memory across sessions.
 
 Add to `files_created`. Save phase `memory` to `completed_phases`. Update progress.
 
@@ -577,8 +567,6 @@ Show:
          Target:  {TARGET}/.claude/memory/
          Created: README.md (memory system overview)
          Created: decisions.md, lessons.md, conventions.md
-         Created: knowledge store (knowledge_store.py, knowledge_retriever.py)
-         Created: memory/knowledge/index.json (empty)
 ```
 
 ---
@@ -588,58 +576,25 @@ _Based on: `guide/06-hooks.md`_
 
 Read `guide/06-hooks.md` (in this repo) for context.
 
-**Copy recommended hooks** (read from this repo's `starter-hooks/`, write to `{TARGET}/.claude/hooks/`):
+**Copy hooks** (read from this repo's `starter-hooks/`, write to `{TARGET}/.claude/hooks/`):
 
 ```
-# Context & memory (UserPromptSubmit)
+# Memory injection (UserPromptSubmit)
 starter-hooks/context_loader.py        → {TARGET}/.claude/hooks/context_loader.py
-starter-hooks/knowledge_loader.py      → {TARGET}/.claude/hooks/knowledge_loader.py
-starter-hooks/smart_context_loader.py  → {TARGET}/.claude/hooks/smart_context_loader.py
-starter-hooks/cost_advisor.py          → {TARGET}/.claude/hooks/cost_advisor.py
-starter-hooks/clear_detector.py        → {TARGET}/.claude/hooks/clear_detector.py
-starter-hooks/user_prompt_submit.py    → {TARGET}/.claude/hooks/user_prompt_submit.py
 
 # Security (PreToolUse) — blocks rm -rf and .env access
 starter-hooks/pre_tool_use.py          → {TARGET}/.claude/hooks/pre_tool_use.py
 
-# Token tracking (PostToolUse) — feeds cost_advisor
-starter-hooks/post_tool_use.py         → {TARGET}/.claude/hooks/post_tool_use.py
-
 # Session end (Stop)
 starter-hooks/stop.py                  → {TARGET}/.claude/hooks/stop.py
-starter-hooks/context_updater.py       → {TARGET}/.claude/hooks/context_updater.py
 starter-hooks/cost_tracker.py          → {TARGET}/.claude/hooks/cost_tracker.py
-starter-hooks/memory_updater.py        → {TARGET}/.claude/hooks/memory_updater.py
-starter-hooks/knowledge_ingestor.py    → {TARGET}/.claude/hooks/knowledge_ingestor.py
-
-# Subagent and compaction
-starter-hooks/subagent_stop.py         → {TARGET}/.claude/hooks/subagent_stop.py
-starter-hooks/pre_compact.py           → {TARGET}/.claude/hooks/pre_compact.py
-starter-hooks/memory_extractor.py      → {TARGET}/.claude/hooks/memory_extractor.py
 ```
 
-Also copy the full utils directory (some files already done in Phase 5, but ensure complete):
+Also copy the utils directory:
 - Read all files from `starter-hooks/utils/` (this repo) → write to `{TARGET}/.claude/hooks/utils/`
-- This includes `__init__.py`, `constants.py`, `knowledge_store.py`, `knowledge_retriever.py`, `llm/__init__.py`, `llm/anth.py`, `llm/oai.py`
+- This includes `__init__.py` and `constants.py`
 
-**Create `skill-rules.json`** (enables the `skill-activation-prompt` hook):
-
-- Read `templates/skills/skill-rules.json` (this repo) → write to `{TARGET}/.claude/skills/skill-rules.json`
-
-Customise the copied file: remove rules for skills you don't have, add rules for your own skills. Then also install the hook:
-
-- Read `starter-hooks/skill-activation-prompt.py` (this repo) → write to `{TARGET}/.claude/hooks/skill-activation-prompt.py`
-
-**NOT copied by default** (install manually if needed):
-- `circuit_breaker.py` — only for autonomous `/ralph`-style pipeline loops
-- `checkpoint.py` — only for `/ship` with rollback support
-- `dev_standards_loader.py` — redundant (Claude Code already reads CLAUDE.md)
-- `notification.py` — empty implementation, must be customized for your OS
-
-**Note on `knowledge_ingestor.py` and `memory_extractor.py`:**
-Both use the Anthropic API to extract learnings. `knowledge_ingestor.py` runs on Stop (end of session), `memory_extractor.py` runs on PreCompact (before context compaction). They cover different moments, so both are included. Each requires `ANTHROPIC_API_KEY` in your environment. If you don't have an API key, they will silently skip.
-
-**The `settings.json` was already created in Phase 2** from `templates/settings.json`. It wires all the above hooks to their events. No changes needed here — just verify it exists at `{TARGET}/.claude/settings.json`.
+**The `settings.json` was already created in Phase 2** from `templates/settings.json`. It wires the hooks to their events. No changes needed here — just verify it exists at `{TARGET}/.claude/settings.json`.
 
 Add hook files to `files_created`. Save phase `hooks` to `completed_phases`. Update progress.
 
@@ -648,27 +603,13 @@ Show:
 [setup] ✓ Phase 6 complete — Hooks
          Target:  {TARGET}/.claude/hooks/
          Installed (UserPromptSubmit):
-           context_loader     — L1 memory injection
-           knowledge_loader   — L2 semantic search
-           smart_context_loader — skill suggestions
-           cost_advisor       — token cost warnings
-           clear_detector     — memory before /clear
-           user_prompt_submit — prompt logging
+           context_loader     — memory injection (decisions, lessons, conventions)
          Installed (PreToolUse):
            pre_tool_use       — blocks rm -rf + .env access
          Installed (Stop):
            stop               — session logging
-           context_updater    — updates session context
            cost_tracker       — daily usage metrics
-           memory_updater     — prompts memory updates
-           knowledge_ingestor — extracts learnings (needs ANTHROPIC_API_KEY)
-         Installed (PreCompact):
-           memory_extractor   — extracts before compaction (needs ANTHROPIC_API_KEY)
-         Installed (skill activation):
-           skill-rules.json          — keyword → skill mapping
-           skill-activation-prompt   — suggests skills on every prompt
          ⚠ Restart Claude Code to activate hooks
-         Optional hooks: see starter-hooks/README.md
 ```
 
 ---

@@ -98,9 +98,7 @@ Examples for React/TypeScript:
 
 ## Memory
 
-Core knowledge lives in `.claude/memory/`:
+Core knowledge lives in `.claude/memory/` and is loaded automatically on every prompt:
 - `decisions.md` — Architectural decisions
 - `lessons.md` — Lessons learned
 - `conventions.md` — Code conventions
-
-These are loaded automatically on every prompt via hooks.

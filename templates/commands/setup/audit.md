@@ -117,7 +117,7 @@ FAIL if any referenced agent is missing.
 Read `.claude/settings.json` and verify:
 - Valid JSON
 - Has `hooks` section
-- Has entries for: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`
+- Has entries for: `UserPromptSubmit`, `PreToolUse`, `Stop`
 - Each hook command references a file that exists in `.claude/hooks/`
 
 FAIL if settings.json is invalid. WARN if hook files are missing.
@@ -147,31 +147,16 @@ Verify memory structure:
 .claude/memory/decisions.md
 .claude/memory/lessons.md
 .claude/memory/conventions.md
-.claude/memory/knowledge/index.json
-.claude/memory/local/index.json
 ```
 
-Verify knowledge store utilities:
+Verify hook utilities:
 ```
-.claude/hooks/utils/knowledge_store.py
-.claude/hooks/utils/knowledge_retriever.py
 .claude/hooks/utils/constants.py
 ```
 
 WARN if any missing.
 
-#### Check 9: Skills
-
-Verify skill activation rules exist:
-```
-.claude/skills/skill-rules.json
-```
-
-Verify it contains valid JSON.
-
-WARN if missing or invalid.
-
-#### Check 10: Optional Integrations
+#### Check 9: Optional Integrations
 
 Check for optional but configured integrations:
 
@@ -213,7 +198,6 @@ WARN if partially installed (some files but not all).
   {PASS|WARN|FAIL} Settings & Hooks    {N}/{total} hooks valid
   {PASS|WARN|FAIL} Context Detection   {details}
   {PASS|WARN|FAIL} Memory System       {N}/{total} files
-  {PASS|WARN|FAIL} Skills              {details}
   {PASS|WARN|FAIL} Integrations        {details}
 
 ──────────────────────────────────────────────────────

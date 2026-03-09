@@ -1,27 +1,20 @@
-# 05 — Memory System: 3-Layer Context Persistence
+# 05 — Memory System: Persistent Context Across Sessions
 
-Claude loses context between sessions by default. The memory system solves this with three complementary layers that persist knowledge across conversations.
+Claude loses context between sessions by default. The memory system solves this with three markdown files that persist knowledge across conversations.
 
 ## Architecture
 
 ```
 .claude/memory/
-├── decisions.md     ← L1: Always loaded into every prompt
-├── lessons.md       ← L1: Always loaded into every prompt
-├── conventions.md   ← L1: Always loaded into every prompt
-├── knowledge/       ← L2: Semantic search (shared with team)
-│   ├── index.json
-│   └── fragments/
-│       └── {id}.json
-├── local/           ← L3: Personal knowledge (gitignored)
-│   ├── index.json
-│   └── fragments/
+├── decisions.md     <- Loaded into every prompt
+├── lessons.md       <- Loaded into every prompt
+├── conventions.md   <- Loaded into every prompt
 └── README.md
 ```
 
 ---
 
-## Layer 1: Always-Loaded Core Knowledge
+## Memory Files
 
 Three markdown files that are injected into **every** Claude prompt automatically (via the `context_loader.py` hook):
 
@@ -73,57 +66,17 @@ Three markdown files that are injected into **every** Claude prompt automaticall
 
 ---
 
-## Layer 2: Semantic Knowledge Store
-
-A TF-IDF indexed store of knowledge fragments. When you submit a prompt, the `knowledge_loader.py` hook:
-1. Tokenizes your prompt
-2. Searches the index for relevant fragments
-3. Injects the top 5 matches as context
-
-**Fragment structure:**
-
-```json
-{
-  "id": "a1b2c3d4",
-  "content": "When building AG Grid tables, always define columnDefs with useMemo...",
-  "tags": ["react", "ag-grid", "tables"],
-  "source": "manual",
-  "scope": "shared",
-  "created": "2026-01-29T10:30:00"
-}
-```
-
-**See implementation:** `starter-hooks/utils/knowledge_store.py` and `starter-hooks/utils/knowledge_retriever.py`
-
----
-
-## Layer 3: Personal Knowledge Store
-
-The `memory/local/` directory is gitignored. This is where personal workflow preferences and session-specific learnings are stored automatically.
-
----
-
 ## Setting Up the Memory System
 
 ### Step 1: Copy the templates
 
 ```bash
-cp .claude/claude-init/templates/memory/decisions.md .claude/memory/decisions.md
-cp .claude/claude-init/templates/memory/lessons.md .claude/memory/lessons.md
-cp .claude/claude-init/templates/memory/conventions.md .claude/memory/conventions.md
+cp templates/memory/decisions.md .claude/memory/decisions.md
+cp templates/memory/lessons.md .claude/memory/lessons.md
+cp templates/memory/conventions.md .claude/memory/conventions.md
 ```
 
-### Step 2: Copy the knowledge store infrastructure
-
-```bash
-mkdir -p .claude/memory/knowledge/fragments
-mkdir -p .claude/memory/local/fragments
-
-cp .claude/claude-init/starter-hooks/utils/knowledge_store.py .claude/hooks/utils/knowledge_store.py
-cp .claude/claude-init/starter-hooks/utils/knowledge_retriever.py .claude/hooks/utils/knowledge_retriever.py
-```
-
-### Step 3: Configure hooks to load L1 memory
+### Step 2: Configure the hook
 
 In `settings.json`:
 
@@ -136,10 +89,6 @@ In `settings.json`:
           {
             "type": "command",
             "command": "uv run .claude/hooks/context_loader.py || true"
-          },
-          {
-            "type": "command",
-            "command": "uv run .claude/hooks/knowledge_loader.py || true"
           }
         ]
       }
@@ -148,68 +97,34 @@ In `settings.json`:
 }
 ```
 
-### Step 4: Fill in your project knowledge
+### Step 3: Fill in your project knowledge
 
-Edit the three L1 files with your project's actual decisions, lessons, and conventions. Start with:
+Edit the three files with your project's actual decisions, lessons, and conventions. Start with:
 - Key architectural decisions already made
 - Known gotchas or traps in your codebase
 - Code style rules beyond what's in ESLint/Prettier
 
 ---
 
-## Using the Memory System
+## Tips
 
-### Adding knowledge manually
-
-```bash
-/utils:memory add "Always use React.lazy for route-level code splitting" --tags react,performance
-```
-
-Or directly create a fragment JSON:
-
-```bash
-echo '{
-  "id": "abc12345",
-  "content": "Always use React.lazy for route-level code splitting",
-  "tags": ["react", "performance", "lazy-loading"],
-  "source": "manual",
-  "scope": "shared",
-  "created": "2026-02-19T10:00:00"
-}' > .claude/memory/knowledge/fragments/abc12345.json
-```
-
-### Automatic ingestion
-
-At the end of each session, `knowledge_ingestor.py` (configured in `Stop` hook) extracts learnings from the transcript and stores them as fragments.
-
-**See implementation:** `starter-hooks/knowledge_ingestor.py`
+- Keep each file under ~100 lines for best results
+- Write short, actionable statements
+- Remove outdated entries regularly
+- Review quarterly — consolidate lessons, prune decisions
 
 ---
 
 ## Team Collaboration
 
-L2 knowledge in `memory/knowledge/fragments/` is committed to git. To share a learning with your team:
+Memory files are committed to git — team members share knowledge:
 
 ```bash
-git add .claude/memory/knowledge/fragments/
+git add .claude/memory/
 git commit -m "chore(memory): add learnings from auth implementation"
 git push
 ```
 
-Team members will have the knowledge auto-loaded in their next relevant prompt.
-
 ---
 
-## Minimal Memory Setup
-
-If you want just the basics without semantic search, only implement L1:
-
-1. Create the three markdown files
-2. Set up `context_loader.py` in `UserPromptSubmit` hooks
-3. Manually maintain the files
-
-This is the simplest useful setup and requires no additional infrastructure.
-
----
-
-**Next Step →** `guide/06-hooks.md`
+**Next Step ->** `guide/06-hooks.md`

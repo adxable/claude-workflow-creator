@@ -27,8 +27,8 @@ The wizard will ask where to install the workflow, then walk you through everyth
 - **6-command pipeline**: `/flow:plan → /flow:implement → /flow:review → /flow:verify → /flow:commit → /flow:pr`
 - **Context detection**: Auto-routes to frontend vs backend tools based on your prompt
 - **Specialized agents**: Planner, implementer, explorer, reviewer, git automator
-- **3-layer memory**: Persistent context across sessions (decisions, lessons, knowledge)
-- **Event hooks**: Auto-inject context, track costs, extract learnings
+- **Persistent memory**: Decisions, lessons, and conventions loaded every session
+- **Event hooks**: Memory injection, security guardrails, session logging, usage metrics
 - **Skills browser**: Install community skills from [skills.sh](https://skills.sh) via `/setup:skills`
 - **Optional add-ons**: Jira MCP integration, browser automation
 
@@ -75,8 +75,8 @@ brew install azure-cli && az login
 | 3. Context Detection | Auto-routes frontend vs backend based on your prompt |
 | 4. Agents | Installs planner, implementer, explorer, reviewer, git automator |
 | 4B. Skills (optional) | Browse & install community skills from [skills.sh](https://skills.sh) |
-| 5. Memory | 3-layer persistent context across sessions |
-| 6. Hooks | Auto-inject context, track costs, circuit breakers |
+| 5. Memory | Persistent context across sessions (decisions, lessons, conventions) |
+| 6. Hooks | Memory injection, security, session logging, usage metrics |
 | 7. Jira (optional) | Ticket management commands (if you use Jira) |
 | 8. Browser (optional) | Chrome extension automation (if applicable) |
 
