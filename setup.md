@@ -582,6 +582,9 @@ Read `guide/06-hooks.md` (in this repo) for context.
 # Memory injection (UserPromptSubmit)
 starter-hooks/context_loader.py        → {TARGET}/.claude/hooks/context_loader.py
 
+# Context detection (UserPromptSubmit) — routes to frontend/backend tools and agents
+starter-hooks/context_detector.py      → {TARGET}/.claude/hooks/context_detector.py
+
 # Security (PreToolUse) — blocks rm -rf and .env access
 starter-hooks/pre_tool_use.py          → {TARGET}/.claude/hooks/pre_tool_use.py
 
@@ -604,6 +607,7 @@ Show:
          Target:  {TARGET}/.claude/hooks/
          Installed (UserPromptSubmit):
            context_loader     — memory injection (decisions, lessons, conventions)
+           context_detector   — frontend/backend routing from YAML configs
          Installed (PreToolUse):
            pre_tool_use       — blocks rm -rf + .env access
          Installed (Stop):

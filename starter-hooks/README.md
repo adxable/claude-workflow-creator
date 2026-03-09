@@ -18,7 +18,8 @@ python3 --version
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `context_loader.py` | UserPromptSubmit | Injects L1 memory (decisions, lessons, conventions) into prompts |
+| `context_loader.py` | UserPromptSubmit | Injects memory (decisions, lessons, conventions) into prompts |
+| `context_detector.py` | UserPromptSubmit | Detects frontend/backend context and injects routing info |
 | `pre_tool_use.py` | PreToolUse | Security — blocks `rm -rf` and `.env` file access |
 | `stop.py` | Stop | Session logging and optional transcript export |
 | `cost_tracker.py` | Stop | Daily usage metrics (session counts, command breakdown) |
@@ -40,6 +41,21 @@ What it does:
 Triggers only on action-oriented prompts (keywords like `plan`, `implement`, `create`, `fix`, etc.) — skips short conversational messages.
 
 **This is the foundation of the memory system.** Without it, Claude won't "remember" anything across sessions.
+
+---
+
+### `context_detector.py`
+
+**Event:** UserPromptSubmit
+**Purpose:** Detects frontend/backend context and injects routing info (tools, agents, project root).
+
+What it does:
+1. Reads all `.yaml` context configs from `.claude/contexts/`
+2. Checks for manual override (`[frontend]` or `[backend]` in the prompt)
+3. Scores the prompt against each context's path, extension, and keyword indicators
+4. If a context is detected with sufficient confidence, outputs the project root, verify commands, and preferred agents
+
+Requires `pyyaml`. Skips silently when no YAML configs exist (e.g. single-context projects).
 
 ---
 
@@ -95,7 +111,10 @@ Provides `ensure_session_log_dir(session_id)` — creates and returns the sessio
 {
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "uv run .claude/hooks/context_loader.py || true" }] }
+      { "hooks": [
+        { "type": "command", "command": "uv run .claude/hooks/context_loader.py || true" },
+        { "type": "command", "command": "uv run .claude/hooks/context_detector.py || true" }
+      ]}
     ],
     "PreToolUse": [
       { "hooks": [{ "type": "command", "command": "uv run .claude/hooks/pre_tool_use.py || true" }] }

@@ -23,6 +23,10 @@ Hooks are shell commands that run automatically at lifecycle events. They turn C
           {
             "type": "command",
             "command": "uv run .claude/hooks/context_loader.py || true"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/context_detector.py || true"
           }
         ]
       }
@@ -68,6 +72,7 @@ The `|| true` ensures hook failures never block Claude from working.
 | Hook | Event | What It Does |
 |------|-------|-------------|
 | `context_loader.py` | UserPromptSubmit | Injects memory (decisions, lessons, conventions) into prompts |
+| `context_detector.py` | UserPromptSubmit | Detects frontend/backend context, injects routing info |
 | `pre_tool_use.py` | PreToolUse | Security — blocks `rm -rf` and `.env` access |
 | `stop.py` | Stop | Session logging and optional transcript export |
 | `cost_tracker.py` | Stop | Daily usage metrics (session counts, commands) |

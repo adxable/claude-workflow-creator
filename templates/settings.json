@@ -15,6 +15,10 @@
           {
             "type": "command",
             "command": "uv run .claude/hooks/context_loader.py || true"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/context_detector.py || true"
           }
         ]
       }
